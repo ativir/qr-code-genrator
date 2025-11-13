@@ -2,73 +2,246 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>QR Code Generator — SVG & PNG</title>
+  <title>QR Code Generator — Colliers-style Theme</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- Open Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: Inter, Roboto, Arial; padding: 20px; max-width: 920px; margin: auto; }
-    h2 { margin-top: 0; }
-    .row { display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
-    input[type="text"], select { padding:8px; font-size:14px; min-width:220px; }
-    button { padding:8px 12px; font-size:14px; cursor:pointer; }
-    #preview { margin-top:14px; display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
-    #preview > div { text-align:center; }
-    .note { color:#555; font-size:13px; margin-top:8px; }
-    footer { margin-top:18px; color:#666; font-size:13px; }
+    :root{
+      /* tweak these to match exact brand */
+      --brand-primary: #0b2a62;    /* deep navy */
+      --brand-accent: #e64b00;     /* accent (if needed) */
+      --muted: #6b6b6b;
+      --bg: #ffffff;
+      --header-height: 72px;
+      --nav-gap: 22px;
+      --container-width: 1120px;
+    }
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Open Sans', system-ui, Arial, sans-serif;
+      color:#111;
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    a{color:inherit}
+    img{max-width:100%; display:block; border:0}
+
+    /* Header */
+    .site-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:var(--header-height);
+      padding:10px 18px;
+      background:var(--bg);
+      border-bottom:1px solid rgba(11,42,98,0.08);
+      position:sticky;
+      top:0;
+      z-index:40;
+    }
+    .left, .right { display:flex; align-items:center; gap:16px; }
+
+    .logo-wrap{display:flex; align-items:center; gap:14px;}
+    .site-logo{height:44px; width:auto; display:block;}
+
+    /* Nav */
+    .site-nav{display:flex; gap:var(--nav-gap); align-items:center;}
+    .site-nav a{
+      color:var(--brand-primary);
+      text-decoration:none;
+      font-weight:600;
+      font-size:15px;
+      padding:6px 4px;
+      letter-spacing:0.1px;
+    }
+    .site-nav a:hover{opacity:0.9; text-decoration:underline; text-underline-offset:6px}
+
+    /* Right controls: language + social icons */
+    .site-controls{display:flex; gap:12px; align-items:center;}
+    .lang-btn, .icon-btn{background:transparent; border:0; padding:6px; cursor:pointer; border-radius:6px; display:inline-flex; align-items:center; justify-content:center;}
+    .lang-btn img{height:18px; width:auto; display:block;}
+    .social-icons{display:flex; gap:10px; align-items:center;}
+    .social-icons img{height:18px; width:auto; opacity:0.95}
+
+    /* Page hero (simple strip) */
+    .hero-strip{
+      height:140px;
+      background:linear-gradient(90deg, rgba(11,42,98,0.04), rgba(11,42,98,0.02));
+      display:flex;
+      align-items:center;
+      padding: 0 18px;
+      border-bottom:1px solid rgba(11,42,98,0.04);
+    }
+    .hero-inner{max-width:var(--container-width); margin:auto; width:100%;}
+    .hero-title{font-size:20px; color:var(--brand-primary); font-weight:600}
+
+    /* Main container */
+    .container{max-width:var(--container-width); margin:28px auto; padding:0 18px;}
+
+    /* QR area card */
+    .card{
+      background:#fff;
+      border:1px solid rgba(11,42,98,0.06);
+      border-radius:8px;
+      padding:18px;
+      box-shadow: 0 6px 18px rgba(11,42,98,0.03);
+    }
+
+    .controls-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px;}
+    input[type="text"]{padding:10px 12px; font-size:15px; min-width:300px; border-radius:6px; border:1px solid #e6e6e6; outline:none}
+    select{padding:9px 10px; border-radius:6px; border:1px solid #e6e6e6; background:#fff}
+    button.primary{background:var(--brand-primary); color:#fff; border:0; padding:10px 14px; border-radius:6px; cursor:pointer; font-weight:600}
+    button.ghost{background:transparent; border:1px solid rgba(11,42,98,0.08); padding:8px 12px; border-radius:6px; cursor:pointer}
+
+    .preview-row{display:flex; gap:24px; margin-top:14px; flex-wrap:wrap; align-items:flex-start}
+    #svg-holder{padding:10px; background:#fff; border:1px solid #f0f0f0; min-width:256px; min-height:256px; display:flex; align-items:center; justify-content:center}
+    #png-holder{width:256px; height:256px; padding:10px; background:#fff; border:1px solid #f0f0f0; display:flex; align-items:center; justify-content:center}
+    #png-img{max-width:100%; max-height:100%; display:none}
+
+    .note{color:var(--muted); font-size:13px; margin-top:8px}
+
+    /* Footer */
+    .site-footer{
+      border-top:1px solid rgba(11,42,98,0.08);
+      padding:18px;
+      margin-top:36px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      max-width:var(--container-width); margin-left:auto; margin-right:auto;
+      color:var(--muted); font-size:13px;
+    }
+    .site-footer .links{display:flex; gap:18px; align-items:center;}
+    .site-footer a{color:var(--muted); text-decoration:none}
+    .copyright{font-size:13px; color:var(--muted)}
+
+    /* Responsive */
+    @media (max-width:920px){
+      .site-nav{display:none}
+      .hero-strip{height:100px}
+      .container{margin:18px auto}
+      #svg-holder, #png-holder{min-width:200px; min-height:200px}
+    }
+    @media (max-width:480px){
+      input[type="text"]{min-width:160px}
+      .controls-row{flex-direction:column; align-items:stretch}
+    }
   </style>
 </head>
 <body>
-  <h2>QR Code Generator — SVG & PNG</h2>
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="left">
+      <div class="logo-wrap">
+        <a href="#" aria-label="Company home">
+          <img src="assets/logo.svg" alt="Company logo" class="site-logo" />
+        </a>
+      </div>
 
-  <div class="row">
-    <input id="text" type="text" placeholder="Enter text or URL" value="https://example.com" />
-    <select id="ec" title="Error correction">
-      <option value="L">EC: L (Low)</option>
-      <option value="M" selected>EC: M (Medium)</option>
-      <option value="Q">EC: Q (Quartile)</option>
-      <option value="H">EC: H (High)</option>
-    </select>
-
-    <label>Size:
-      <select id="size">
-        <option value="256">256</option>
-        <option value="384">384</option>
-        <option value="512" selected>512</option>
-      </select>
-    </label>
-
-    <button id="gen">Generate</button>
-  </div>
-
-  <div class="row">
-    <button id="download-png" disabled>Download PNG</button>
-    <button id="download-svg" disabled>Download SVG</button>
-    <button id="download-png-hi" disabled title="Higher-resolution PNG">Download PNG (Hi-Res)</button>
-  </div>
-
-  <div id="preview">
-    <div>
-      <div><strong>SVG Preview</strong></div>
-      <div id="svg-holder" style="padding:8px; background:#fff; border:1px solid #e0e0e0;"></div>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#">Services</a>
+        <a href="#">Properties</a>
+        <a href="#">Insights</a>
+        <a href="#">Experts</a>
+        <a href="#">Office locations</a>
+        <a href="#">Careers</a>
+      </nav>
     </div>
-    <div>
-      <div><strong>PNG Preview</strong></div>
-      <div id="png-holder" style="width:256px; height:256px; padding:8px; background:#fff; border:1px solid #e0e0e0; display:flex; align-items:center; justify-content:center;">
-        <img id="png-img" alt="PNG preview" style="max-width:100%; max-height:100%; display:none;" />
+
+    <div class="site-controls right">
+      <button class="lang-btn" title="Language switch">
+        <img src="assets/india-flag.svg" alt="India" />
+      </button>
+
+      <div class="social-icons" aria-hidden="false">
+        <a class="icon-btn" href="#" aria-label="LinkedIn"><img src="assets/linkedin.svg" alt="LinkedIn"></a>
+        <a class="icon-btn" href="#" aria-label="X (Twitter)"><img src="assets/x.svg" alt="X"></a>
+        <a class="icon-btn" href="#" aria-label="Facebook"><img src="assets/facebook.svg" alt="Facebook"></a>
+        <a class="icon-btn" href="#" aria-label="Instagram"><img src="assets/instagram.svg" alt="Instagram"></a>
       </div>
     </div>
+  </header>
+
+  <!-- simple hero strip -->
+  <div class="hero-strip" role="presentation">
+    <div class="hero-inner">
+      <div class="hero-title">Internal Tools — QR Code Generator</div>
+    </div>
   </div>
 
-  <div class="note">
-    Tips: for logos overlay use EC level Q or H. SVG is best for print / scaling. PNG is ready for quick sharing.
-  </div>
+  <!-- Main content -->
+  <main class="container" role="main">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div style="font-size:18px; font-weight:700; color:var(--brand-primary)">QR Code Generator</div>
+        <div style="color:var(--muted); font-size:13px">Generate SVG and PNG QR codes quickly</div>
+      </div>
 
-  <footer>
-    Hosted with GitHub Pages — open the generator, enter text, click Generate, then choose the download type.
+      <div class="controls-row" style="margin-top:12px;">
+        <input id="text" type="text" placeholder="Enter text or URL" value="https://example.com" />
+        <select id="ec" title="Error correction">
+          <option value="L">EC: L (Low)</option>
+          <option value="M" selected>EC: M (Medium)</option>
+          <option value="Q">EC: Q (Quartile)</option>
+          <option value="H">EC: H (High)</option>
+        </select>
+
+        <label>
+          <select id="size" aria-label="Size">
+            <option value="256">256</option>
+            <option value="384">384</option>
+            <option value="512" selected>512</option>
+          </select>
+        </label>
+
+        <button id="gen" class="primary">Generate</button>
+        <button id="download-png" class="ghost" disabled>Download PNG</button>
+        <button id="download-svg" class="ghost" disabled>Download SVG</button>
+        <button id="download-png-hi" class="ghost" disabled title="Higher-resolution PNG">Download PNG (Hi-Res)</button>
+      </div>
+
+      <div class="preview-row">
+        <div>
+          <div style="font-weight:600; margin-bottom:8px;">SVG Preview</div>
+          <div id="svg-holder" aria-live="polite">No preview</div>
+        </div>
+
+        <div>
+          <div style="font-weight:600; margin-bottom:8px;">PNG Preview</div>
+          <div id="png-holder">
+            <img id="png-img" alt="PNG preview" />
+          </div>
+        </div>
+      </div>
+
+      <div class="note">Tip: Use EC Q/H if you plan to overlay a small logo at the center.</div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="links">
+      <a href="#">Cookie Policy</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">Accessibility Statement</a>
+    </div>
+    <div class="copyright">Copyright © <span id="year"></span> Colliers</div>
   </footer>
 
-  <!-- qrcode library (browser build) -->
+  <!-- QR library + JS (same logic as before) -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
+    // set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
     const genBtn = document.getElementById('gen');
     const downloadPngBtn = document.getElementById('download-png');
     const downloadSvgBtn = document.getElementById('download-svg');
@@ -76,7 +249,6 @@
 
     const svgHolder = document.getElementById('svg-holder');
     const pngImg = document.getElementById('png-img');
-    const pngHolder = document.getElementById('png-holder');
 
     let lastGenerated = { svg: null, pngDataUrl: null };
 
@@ -118,7 +290,7 @@
         }, (err2, url) => {
           if (err2) {
             console.error(err2);
-            pngHolder.textContent = 'Error generating PNG';
+            svgHolder.innerHTML = 'Error generating PNG';
             setDisabledAll(true);
             return;
           }
@@ -181,6 +353,7 @@
       });
     });
 
+    // allow Enter to generate
     document.getElementById('text').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') genBtn.click();
     });
@@ -189,4 +362,3 @@
   </script>
 </body>
 </html>
-

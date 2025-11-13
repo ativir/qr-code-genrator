@@ -2,246 +2,176 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>QR Code Generator — Colliers-style Theme</title>
+  <title>QR Generator — Clean</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <!-- Open Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-
   <style>
     :root{
-      /* tweak these to match exact brand */
-      --brand-primary: #0b2a62;    /* deep navy */
-      --brand-accent: #e64b00;     /* accent (if needed) */
-      --muted: #6b6b6b;
-      --bg: #ffffff;
-      --header-height: 72px;
-      --nav-gap: 22px;
-      --container-width: 1120px;
+      --brand:#0b2a62;
+      --muted:#6b6b6b;
+      --bg:#ffffff;
+      --card:#ffffff;
+      --radius:10px;
+      --container-width:920px;
     }
-
-    /* Reset & base */
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: 'Open Sans', system-ui, Arial, sans-serif;
+      font-family:'Open Sans',system-ui,Arial,sans-serif;
+      background:#fbfcfd;
       color:#111;
-      background:var(--bg);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
 
-    a{color:inherit}
-    img{max-width:100%; display:block; border:0}
-
-    /* Header */
-    .site-header{
+    /* small top brand bar (optional) */
+    .brandbar{
+      height:56px;
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      height:var(--header-height);
-      padding:10px 18px;
+      gap:12px;
+      padding:0 18px;
       background:var(--bg);
-      border-bottom:1px solid rgba(11,42,98,0.08);
-      position:sticky;
-      top:0;
-      z-index:40;
+      border-bottom:1px solid rgba(11,42,98,0.06);
     }
-    .left, .right { display:flex; align-items:center; gap:16px; }
+    .brand-left{display:flex; align-items:center; gap:12px}
+    .logo{height:36px; width:auto; display:block}
+    .brand-title{font-weight:600; color:var(--brand); font-size:14px}
 
-    .logo-wrap{display:flex; align-items:center; gap:14px;}
-    .site-logo{height:44px; width:auto; display:block;}
-
-    /* Nav */
-    .site-nav{display:flex; gap:var(--nav-gap); align-items:center;}
-    .site-nav a{
-      color:var(--brand-primary);
-      text-decoration:none;
-      font-weight:600;
-      font-size:15px;
-      padding:6px 4px;
-      letter-spacing:0.1px;
-    }
-    .site-nav a:hover{opacity:0.9; text-decoration:underline; text-underline-offset:6px}
-
-    /* Right controls: language + social icons */
-    .site-controls{display:flex; gap:12px; align-items:center;}
-    .lang-btn, .icon-btn{background:transparent; border:0; padding:6px; cursor:pointer; border-radius:6px; display:inline-flex; align-items:center; justify-content:center;}
-    .lang-btn img{height:18px; width:auto; display:block;}
-    .social-icons{display:flex; gap:10px; align-items:center;}
-    .social-icons img{height:18px; width:auto; opacity:0.95}
-
-    /* Page hero (simple strip) */
-    .hero-strip{
-      height:140px;
-      background:linear-gradient(90deg, rgba(11,42,98,0.04), rgba(11,42,98,0.02));
+    /* center container */
+    .wrap{
+      min-height:calc(100vh - 56px);
       display:flex;
       align-items:center;
-      padding: 0 18px;
-      border-bottom:1px solid rgba(11,42,98,0.04);
+      justify-content:center;
+      padding:28px 18px;
     }
-    .hero-inner{max-width:var(--container-width); margin:auto; width:100%;}
-    .hero-title{font-size:20px; color:var(--brand-primary); font-weight:600}
 
-    /* Main container */
-    .container{max-width:var(--container-width); margin:28px auto; padding:0 18px;}
-
-    /* QR area card */
+    /* main card */
     .card{
+      width:100%;
+      max-width:var(--container-width);
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:0 10px 30px rgba(12,34,78,0.06);
+      border:1px solid rgba(11,42,98,0.04);
+    }
+
+    .card-head{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px}
+    .title{font-weight:700; color:var(--brand); font-size:18px}
+    .subtitle{color:var(--muted); font-size:13px}
+
+    /* controls */
+    .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .controls input[type="text"]{
+      padding:10px 12px; border-radius:8px; border:1px solid #e7e7e7; min-width:320px; font-size:14px;
+      outline:none;
+    }
+    .controls select{padding:10px 12px; border-radius:8px; border:1px solid #e7e7e7; background:#fff}
+    .btn{padding:10px 14px; border-radius:8px; border:0; cursor:pointer; font-weight:600}
+    .btn-primary{background:var(--brand); color:#fff}
+    .btn-ghost{background:transparent; border:1px solid rgba(11,42,98,0.08); color:var(--brand)}
+
+    /* preview area */
+    .preview{
+      display:flex;
+      gap:18px;
+      margin-top:18px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+    .preview .box{
+      width:260px;
+      min-height:260px;
+      border:1px solid #f0f0f0;
       background:#fff;
-      border:1px solid rgba(11,42,98,0.06);
       border-radius:8px;
-      padding:18px;
-      box-shadow: 0 6px 18px rgba(11,42,98,0.03);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
     }
+    .preview .label{font-size:13px; font-weight:600; margin-bottom:8px; color:var(--brand)}
 
-    .controls-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px;}
-    input[type="text"]{padding:10px 12px; font-size:15px; min-width:300px; border-radius:6px; border:1px solid #e6e6e6; outline:none}
-    select{padding:9px 10px; border-radius:6px; border:1px solid #e6e6e6; background:#fff}
-    button.primary{background:var(--brand-primary); color:#fff; border:0; padding:10px 14px; border-radius:6px; cursor:pointer; font-weight:600}
-    button.ghost{background:transparent; border:1px solid rgba(11,42,98,0.08); padding:8px 12px; border-radius:6px; cursor:pointer}
+    .note{margin-top:12px; color:var(--muted); font-size:13px}
 
-    .preview-row{display:flex; gap:24px; margin-top:14px; flex-wrap:wrap; align-items:flex-start}
-    #svg-holder{padding:10px; background:#fff; border:1px solid #f0f0f0; min-width:256px; min-height:256px; display:flex; align-items:center; justify-content:center}
-    #png-holder{width:256px; height:256px; padding:10px; background:#fff; border:1px solid #f0f0f0; display:flex; align-items:center; justify-content:center}
-    #png-img{max-width:100%; max-height:100%; display:none}
-
-    .note{color:var(--muted); font-size:13px; margin-top:8px}
-
-    /* Footer */
-    .site-footer{
-      border-top:1px solid rgba(11,42,98,0.08);
-      padding:18px;
-      margin-top:36px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      max-width:var(--container-width); margin-left:auto; margin-right:auto;
-      color:var(--muted); font-size:13px;
-    }
-    .site-footer .links{display:flex; gap:18px; align-items:center;}
-    .site-footer a{color:var(--muted); text-decoration:none}
-    .copyright{font-size:13px; color:var(--muted)}
-
-    /* Responsive */
-    @media (max-width:920px){
-      .site-nav{display:none}
-      .hero-strip{height:100px}
-      .container{margin:18px auto}
-      #svg-holder, #png-holder{min-width:200px; min-height:200px}
-    }
-    @media (max-width:480px){
-      input[type="text"]{min-width:160px}
-      .controls-row{flex-direction:column; align-items:stretch}
+    /* small screens */
+    @media (max-width:720px){
+      .controls input[type="text"]{min-width:180px; width:100%}
+      .preview{justify-content:center}
+      .brand-title{display:none}
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="site-header" role="banner">
-    <div class="left">
-      <div class="logo-wrap">
-        <a href="#" aria-label="Company home">
-          <img src="assets/logo.svg" alt="Company logo" class="site-logo" />
-        </a>
-      </div>
-
-      <nav class="site-nav" aria-label="Primary navigation">
-        <a href="#">Services</a>
-        <a href="#">Properties</a>
-        <a href="#">Insights</a>
-        <a href="#">Experts</a>
-        <a href="#">Office locations</a>
-        <a href="#">Careers</a>
-      </nav>
+  <!-- minimal brand bar -->
+  <div class="brandbar" role="banner">
+    <div class="brand-left">
+      <!-- Place a logo in assets/logo.svg or use text fallback -->
+      <img src="assets/logo.svg" alt="Company logo" class="logo" onerror="this.style.display='none'">
+      <div class="brand-title">Internal Tools</div>
     </div>
-
-    <div class="site-controls right">
-      <button class="lang-btn" title="Language switch">
-        <img src="assets/india-flag.svg" alt="India" />
-      </button>
-
-      <div class="social-icons" aria-hidden="false">
-        <a class="icon-btn" href="#" aria-label="LinkedIn"><img src="assets/linkedin.svg" alt="LinkedIn"></a>
-        <a class="icon-btn" href="#" aria-label="X (Twitter)"><img src="assets/x.svg" alt="X"></a>
-        <a class="icon-btn" href="#" aria-label="Facebook"><img src="assets/facebook.svg" alt="Facebook"></a>
-        <a class="icon-btn" href="#" aria-label="Instagram"><img src="assets/instagram.svg" alt="Instagram"></a>
-      </div>
-    </div>
-  </header>
-
-  <!-- simple hero strip -->
-  <div class="hero-strip" role="presentation">
-    <div class="hero-inner">
-      <div class="hero-title">Internal Tools — QR Code Generator</div>
-    </div>
+    <div style="margin-left:auto; color:var(--muted); font-size:13px">QR Code Generator</div>
   </div>
 
-  <!-- Main content -->
-  <main class="container" role="main">
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-        <div style="font-size:18px; font-weight:700; color:var(--brand-primary)">QR Code Generator</div>
-        <div style="color:var(--muted); font-size:13px">Generate SVG and PNG QR codes quickly</div>
+  <!-- main -->
+  <div class="wrap">
+    <div class="card" role="main" aria-labelledby="page-title">
+      <div class="card-head">
+        <div>
+          <div id="page-title" class="title">QR Code Generator</div>
+          <div class="subtitle">Generate SVG and PNG QR codes quickly</div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button id="download-png" class="btn btn-ghost" disabled>Download PNG</button>
+          <button id="download-svg" class="btn btn-ghost" disabled>Download SVG</button>
+        </div>
       </div>
 
-      <div class="controls-row" style="margin-top:12px;">
-        <input id="text" type="text" placeholder="Enter text or URL" value="https://example.com" />
-        <select id="ec" title="Error correction">
+      <div class="controls" aria-label="QR controls">
+        <input id="text" type="text" placeholder="Enter text or URL" value="https://example.com" aria-label="Text to encode" />
+        <select id="ec" aria-label="Error correction level" title="Error correction">
           <option value="L">EC: L (Low)</option>
           <option value="M" selected>EC: M (Medium)</option>
           <option value="Q">EC: Q (Quartile)</option>
           <option value="H">EC: H (High)</option>
         </select>
 
-        <label>
-          <select id="size" aria-label="Size">
-            <option value="256">256</option>
-            <option value="384">384</option>
-            <option value="512" selected>512</option>
-          </select>
-        </label>
+        <select id="size" aria-label="Size">
+          <option value="256">256</option>
+          <option value="384">384</option>
+          <option value="512" selected>512</option>
+        </select>
 
-        <button id="gen" class="primary">Generate</button>
-        <button id="download-png" class="ghost" disabled>Download PNG</button>
-        <button id="download-svg" class="ghost" disabled>Download SVG</button>
-        <button id="download-png-hi" class="ghost" disabled title="Higher-resolution PNG">Download PNG (Hi-Res)</button>
+        <button id="gen" class="btn btn-primary">Generate</button>
+
+        <button id="download-png-hi" class="btn btn-ghost" disabled title="High resolution PNG">PNG (Hi-Res)</button>
       </div>
 
-      <div class="preview-row">
+      <div class="preview" aria-live="polite">
         <div>
-          <div style="font-weight:600; margin-bottom:8px;">SVG Preview</div>
-          <div id="svg-holder" aria-live="polite">No preview</div>
+          <div class="label">SVG Preview</div>
+          <div id="svg-holder" class="box">No preview</div>
         </div>
 
         <div>
-          <div style="font-weight:600; margin-bottom:8px;">PNG Preview</div>
-          <div id="png-holder">
-            <img id="png-img" alt="PNG preview" />
+          <div class="label">PNG Preview</div>
+          <div id="png-holder" class="box">
+            <img id="png-img" alt="PNG preview" style="max-width:100%; max-height:100%; display:none" />
           </div>
         </div>
       </div>
 
-      <div class="note">Tip: Use EC Q/H if you plan to overlay a small logo at the center.</div>
+      <div class="note">Tip: use EC Q/H if you will overlay a small logo at center.</div>
     </div>
-  </main>
+  </div>
 
-  <!-- Footer -->
-  <footer class="site-footer" role="contentinfo">
-    <div class="links">
-      <a href="#">Cookie Policy</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Use</a>
-      <a href="#">Accessibility Statement</a>
-    </div>
-    <div class="copyright">Copyright © <span id="year"></span> Colliers</div>
-  </footer>
-
-  <!-- QR library + JS (same logic as before) -->
+  <!-- QR library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    // set current year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
     const genBtn = document.getElementById('gen');
     const downloadPngBtn = document.getElementById('download-png');
     const downloadSvgBtn = document.getElementById('download-svg');
@@ -250,9 +180,9 @@
     const svgHolder = document.getElementById('svg-holder');
     const pngImg = document.getElementById('png-img');
 
-    let lastGenerated = { svg: null, pngDataUrl: null };
+    let last = { svg: null, pngDataUrl: null };
 
-    function setDisabledAll(v) {
+    function setDisabledAll(v){
       downloadPngBtn.disabled = v;
       downloadSvgBtn.disabled = v;
       downloadPngHiBtn.disabled = v;
@@ -260,42 +190,25 @@
 
     genBtn.addEventListener('click', () => {
       const text = document.getElementById('text').value.trim();
-      if (!text) return alert('Enter text or URL to encode');
+      if(!text) return alert('Enter text or URL');
 
       const ec = document.getElementById('ec').value;
-      const size = parseInt(document.getElementById('size').value, 10) || 512;
+      const size = parseInt(document.getElementById('size').value,10) || 512;
 
       setDisabledAll(true);
       svgHolder.innerHTML = 'Generating...';
       pngImg.style.display = 'none';
       pngImg.src = '';
 
-      QRCode.toString(text, {
-        type: 'svg',
-        errorCorrectionLevel: ec,
-        width: size
-      }, (err, svgString) => {
-        if (err) {
-          svgHolder.innerHTML = 'Error generating SVG';
-          console.error(err);
-          return;
-        }
+      QRCode.toString(text, { type:'svg', errorCorrectionLevel:ec, width:size }, (err, svgString) => {
+        if(err){ svgHolder.textContent='Error'; console.error(err); return; }
         svgHolder.innerHTML = svgString;
-        lastGenerated.svg = svgString;
+        last.svg = svgString;
 
-        QRCode.toDataURL(text, {
-          errorCorrectionLevel: ec,
-          width: size,
-          margin: 1
-        }, (err2, url) => {
-          if (err2) {
-            console.error(err2);
-            svgHolder.innerHTML = 'Error generating PNG';
-            setDisabledAll(true);
-            return;
-          }
-          lastGenerated.pngDataUrl = url;
-          pngImg.src = url;
+        QRCode.toDataURL(text, { errorCorrectionLevel:ec, width:size, margin:1 }, (err2, dataUrl) => {
+          if(err2){ console.error(err2); svgHolder.textContent='Error'; setDisabledAll(true); return; }
+          last.pngDataUrl = dataUrl;
+          pngImg.src = dataUrl;
           pngImg.style.display = 'block';
           setDisabledAll(false);
         });
@@ -303,61 +216,37 @@
     });
 
     downloadSvgBtn.addEventListener('click', () => {
-      if (!lastGenerated.svg) return alert('Generate QR first');
-      const filename = 'qrcode.svg';
-      const svgBlob = new Blob([lastGenerated.svg], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
+      if(!last.svg) return alert('Generate QR first');
+      const blob = new Blob([last.svg], { type:'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      a.href = url; a.download = 'qrcode.svg'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 4000);
     });
 
     downloadPngBtn.addEventListener('click', () => {
-      if (!lastGenerated.pngDataUrl) return alert('Generate QR first');
+      if(!last.pngDataUrl) return alert('Generate QR first');
       const a = document.createElement('a');
-      a.href = lastGenerated.pngDataUrl;
-      a.download = 'qrcode.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      a.href = last.pngDataUrl; a.download='qrcode.png'; document.body.appendChild(a); a.click(); a.remove();
     });
 
     downloadPngHiBtn.addEventListener('click', () => {
       const text = document.getElementById('text').value.trim();
-      if (!text) return alert('Generate QR first');
+      if(!text) return alert('Generate QR first');
       const ec = document.getElementById('ec').value;
       const hiSize = 2048;
-      setDisabledAll(true);
-      downloadPngHiBtn.textContent = 'Preparing...';
-      QRCode.toDataURL(text, {
-        errorCorrectionLevel: ec,
-        width: hiSize,
-        margin: 1
-      }, (err, url) => {
-        setDisabledAll(false);
-        downloadPngHiBtn.textContent = 'Download PNG (Hi-Res)';
-        if (err) {
-          console.error(err);
-          return alert('Failed to create hi-res PNG');
-        }
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'qrcode-hires.png';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+      setDisabledAll(true); downloadPngHiBtn.textContent='Preparing...';
+      QRCode.toDataURL(text, { errorCorrectionLevel:ec, width:hiSize, margin:1 }, (err, url) => {
+        setDisabledAll(false); downloadPngHiBtn.textContent='PNG (Hi-Res)';
+        if(err){ console.error(err); return alert('Failed to create hi-res PNG'); }
+        const a = document.createElement('a'); a.href=url; a.download='qrcode-hires.png'; document.body.appendChild(a); a.click(); a.remove();
       });
     });
 
-    // allow Enter to generate
-    document.getElementById('text').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') genBtn.click();
-    });
+    // enter to submit
+    document.getElementById('text').addEventListener('keydown', (e)=>{ if(e.key==='Enter') genBtn.click(); });
 
+    // initial
     setDisabledAll(true);
   </script>
 </body>

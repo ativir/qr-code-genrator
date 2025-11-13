@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>QR Generator — Clean</title>
+  <title>QR Generator | Colliers</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -35,7 +35,7 @@
       background:var(--bg);
       border-bottom:1px solid rgba(11,42,98,0.06);
     }
-    <img src="assets/logo.svg" alt="Company logo" class="logo">
+
     .brand-left{display:flex; align-items:center; gap:12px}
     .logo{height:36px; width:auto; display:block}
     .brand-title{font-weight:600; color:var(--brand); font-size:14px}
@@ -110,9 +110,12 @@
   <!-- minimal brand bar -->
   <div class="brandbar" role="banner">
     <div class="brand-left">
-      <!-- Place a logo in assets/logo.svg or use text fallback -->
-      <img src="assets/logo.svg" alt="Company logo" class="logo" onerror="this.style.display='none'">
-      <div class="brand-title">Internal Tools</div>
+      <!-- Logo: ensure this file exists at assets/logo.svg (case-sensitive) -->
+      <img id="brandLogo" src="assets/logo.svg" alt="Company logo" class="logo"
+           onerror="this.style.display='none'; document.getElementById('brandFallback').style.display='inline-block'">
+      <!-- fallback text if logo asset missing -->
+      <span id="brandFallback" style="display:none; font-weight:700; color:var(--brand);">Colliers India</span>
+      <div class="brand-title">Colliers India | Internal Tools</div>
     </div>
     <div style="margin-left:auto; color:var(--muted); font-size:13px">QR Code Generator</div>
   </div>
@@ -166,7 +169,9 @@
         </div>
       </div>
 
-      <div class="note">Tip: use EC Q/H if you will overlay a small logo at center.</div>
+      <div class="note">Tip: use EC Q/H if you will overlay a small logo at center.
+      
+        Copyright © 2025 Colliers India - Ativir</div>
     </div>
   </div>
 
@@ -252,4 +257,3 @@
   </script>
 </body>
 </html>
-

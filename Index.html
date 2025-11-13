@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>QR Code Generator — SVG & PNG</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Inter, Roboto, Arial; padding: 20px; max-width: 920px; margin: auto; }
+    h2 { margin-top: 0; }
+    .row { display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
+    input[type="text"], select { padding:8px; font-size:14px; min-width:220px; }
+    button { padding:8px 12px; font-size:14px; cursor:pointer; }
+    #preview { margin-top:14px; display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+    #preview > div { text-align:center; }
+    .note { color:#555; font-size:13px; margin-top:8px; }
+    footer { margin-top:18px; color:#666; font-size:13px; }
+  </style>
+</head>
+<body>
+  <h2>QR Code Generator — SVG & PNG</h2>
+
+  <div class="row">
+    <input id="text" type="text" placeholder="Enter text or URL" value="https://example.com" />
+    <select id="ec" title="Error correction">
+      <option value="L">EC: L (Low)</option>
+      <option value="M" selected>EC: M (Medium)</option>
+      <option value="Q">EC: Q (Quartile)</option>
+      <option value="H">EC: H (High)</option>
+    </select>
+
+    <label>Size:
+      <select id="size">
+        <option value="256">256</option>
+        <option value="384">384</option>
+        <option value="512" selected>512</option>
+      </select>
+    </label>
+
+    <button id="gen">Generate</button>
+  </div>
+
+  <div class="row">
+    <button id="download-png" disabled>Download PNG</button>
+    <button id="download-svg" disabled>Download SVG</button>
+    <button id="download-png-hi" disabled title="Higher-resolution PNG">Download PNG (Hi-Res)</button>
+  </div>
+
+  <div id="preview">
+    <div>
+      <div><strong>SVG Preview</strong></div>
+      <div id="svg-holder" style="padding:8px; background:#fff; border:1px solid #e0e0e0;"></div>
+    </div>
+    <div>
+      <div><strong>PNG Preview</strong></div>
+      <div id="png-holder" style="width:256px; height:256px; padding:8px; background:#fff; border:1px solid #e0e0e0; display:flex; align-items:center; justify-content:center;">
+        <img id="png-img" alt="PNG preview" style="max-width:100%; max-height:100%; display:none;" />
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    Tips: for logos overlay use EC level Q or H. SVG is best for print / scaling. PNG is ready for quick sharing.
+  </div>
+
+  <footer>
+    Hosted with GitHub Pages — open the generator, enter text, click Generate, then choose the download type.
+  </footer>
+
+  <!-- qrcode library (browser build) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    const genBtn = document.getElementById('gen');
+    const downloadPngBtn = document.getElementById('download-png');
+    const downloadSvgBtn = document.getElementById('download-svg');
+    const downloadPngHiBtn = document.getElementById('download-png-hi');
+
+    const svgHolder = document.getElementById('svg-holder');
+    const pngImg = document.getElementById('png-img');
+    const pngHolder = document.getElementById('png-holder');
+
+    let lastGenerated = { svg: null, pngDataUrl: null };
+
+    function setDisabledAll(v) {
+      downloadPngBtn.disabled = v;
+      downloadSvgBtn.disabled = v;
+      downloadPngHiBtn.disabled = v;
+    }
+
+    genBtn.addEventListener('click', () => {
+      const text = document.getElementById('text').value.trim();
+      if (!text) return alert('Enter text or URL to encode');
+
+      const ec = document.getElementById('ec').value;
+      const size = parseInt(document.getElementById('size').value, 10) || 512;
+
+      setDisabledAll(true);
+      svgHolder.innerHTML = 'Generating...';
+      pngImg.style.display = 'none';
+      pngImg.src = '';
+
+      QRCode.toString(text, {
+        type: 'svg',
+        errorCorrectionLevel: ec,
+        width: size
+      }, (err, svgString) => {
+        if (err) {
+          svgHolder.innerHTML = 'Error generating SVG';
+          console.error(err);
+          return;
+        }
+        svgHolder.innerHTML = svgString;
+        lastGenerated.svg = svgString;
+
+        QRCode.toDataURL(text, {
+          errorCorrectionLevel: ec,
+          width: size,
+          margin: 1
+        }, (err2, url) => {
+          if (err2) {
+            console.error(err2);
+            pngHolder.textContent = 'Error generating PNG';
+            setDisabledAll(true);
+            return;
+          }
+          lastGenerated.pngDataUrl = url;
+          pngImg.src = url;
+          pngImg.style.display = 'block';
+          setDisabledAll(false);
+        });
+      });
+    });
+
+    downloadSvgBtn.addEventListener('click', () => {
+      if (!lastGenerated.svg) return alert('Generate QR first');
+      const filename = 'qrcode.svg';
+      const svgBlob = new Blob([lastGenerated.svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    });
+
+    downloadPngBtn.addEventListener('click', () => {
+      if (!lastGenerated.pngDataUrl) return alert('Generate QR first');
+      const a = document.createElement('a');
+      a.href = lastGenerated.pngDataUrl;
+      a.download = 'qrcode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+
+    downloadPngHiBtn.addEventListener('click', () => {
+      const text = document.getElementById('text').value.trim();
+      if (!text) return alert('Generate QR first');
+      const ec = document.getElementById('ec').value;
+      const hiSize = 2048;
+      setDisabledAll(true);
+      downloadPngHiBtn.textContent = 'Preparing...';
+      QRCode.toDataURL(text, {
+        errorCorrectionLevel: ec,
+        width: hiSize,
+        margin: 1
+      }, (err, url) => {
+        setDisabledAll(false);
+        downloadPngHiBtn.textContent = 'Download PNG (Hi-Res)';
+        if (err) {
+          console.error(err);
+          return alert('Failed to create hi-res PNG');
+        }
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'qrcode-hires.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    });
+
+    document.getElementById('text').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') genBtn.click();
+    });
+
+    setDisabledAll(true);
+  </script>
+</body>
+</html>
